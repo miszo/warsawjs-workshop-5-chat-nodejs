@@ -7,10 +7,10 @@ const readline = require('readline').createInterface({
   output: process.stdout
 });
 
-function consoleOut(msg) {
+function consoleOut(...msg) {
   process.stdout.clearLine();
   process.stdout.cursorTo(0);
-  console.log(msg);
+  console.log(msg.join(' '));
   readline.prompt(true);
 }
 

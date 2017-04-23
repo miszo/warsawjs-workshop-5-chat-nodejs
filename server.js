@@ -5,14 +5,14 @@ const io = require('socket.io')();
 io.on('connection', client => {
   client.name = client.conn.id;
   console.log(`Client ${client.name} connected`);
-  io.emit('serverMsg', `Client ${client.name} joined chat`);
+  io.emit('serverMsg', `${client.name} joined chat`);
 
   client.on('loginMsg', data => {
-    let indexStart = data.indexOf(' ');
     client.prevName = client.name;
+    let indexStart = data.indexOf(' ');
     client.name = data.substring(indexStart+1, data.length);
     console.log(`Client ${client.prevName} renamed to: ${client.name}`);
-    io.emit('serverMsg', `${client.prevName} is now: ${client.name}`);
+    io.emit('serverMsg', `${client.prevName} is now known as ${client.name}`);
   });
 
   client.on('clientMsg', data => {
