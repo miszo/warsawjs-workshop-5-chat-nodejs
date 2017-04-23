@@ -7,29 +7,12 @@ const readline = require('readline').createInterface({
   output: process.stdout
 });
 
-// readline.on('line', line => {
-//   console.log(`odczytałem: ${line}`);
-// });
-
-// readline.prompt();
-
-// setInterval(() => {
-//   console.log('Wysyłam wiadomość...');
-//   socket.emit('pieniny', 'Hello World!');
-// }, 2000);
-
-// let count = 0;
-// socket.on('msg', data => {
-//   count++;
-//   console.log(`Wiadomość od Serwera #${count}: ${data}`);
-// });
-
 readline.on('line', line => {
-  socket.emit('client-msg', line);
+  socket.emit('clientMsg', line);
 });
 
 readline.prompt();
 
-socket.on('broadcast', data => {
+socket.on('chatMsg', data => {
   console.log(data);
 });
