@@ -7,12 +7,30 @@ const readline = require('readline').createInterface({
   output: process.stdout
 });
 
+function consoleOut(msg) {
+  process.stdout.clearLine();
+  process.stdout.cursorTo(0);
+  console.log(msg);
+  readline.prompt(true);
+}
+
 readline.on('line', line => {
-  socket.emit('clientMsg', line);
+  if (line.startsWith('/login ')) {
+    socket.emit('loginMsg', line);
+    readline.prompt(true);
+  } else {
+    socket.emit('clientMsg', line);
+  }
 });
 
 readline.prompt();
 
+socket.on()
+
 socket.on('chatMsg', data => {
-  console.log(data);
+  consoleOut(`${data.name}: ${data.message}`);
+});
+
+socket.on('serverMsg', data => {
+  consoleOut(data);
 });
