@@ -2,30 +2,46 @@
 
 const io = require('socket.io')();
 
-io.on('connection', client => {
-  client.name = client.conn.id;
-  console.log(`Client ${client.name} connected`);
-  io.emit('serverMsg', `${client.name} joined chat`);
+const db = require('./db.js');
+const tokenGenerator = require('./tokenGenerator.js');
+const auth = require('./auth.js');
 
-  client.on('loginMsg', data => {
-    client.prevName = client.name;
-    let indexStart = data.indexOf(' ');
-    client.name = data.substring(indexStart+1, data.length);
-    console.log(`Client ${client.prevName} renamed to: ${client.name}`);
-    io.emit('serverMsg', `${client.prevName} is now known as ${client.name}`);
-  });
-
-  client.on('clientMsg', data => {
-    console.log(`Client ${client.name} sent: ${data}`);
+function messageHandler(client, data) {
+  console.log(`Client ${data.nick} [${client.id}] sent: ${data.msg}`);
     io.emit('chatMsg', {
-      name: client.name,
-      message: data
+      name: data.nick,
+      message: data.msg
     });
-    console.log(`Sent from ${client.name} do all Clients: ${data}`);
+    console.log(`Sent from ${data.nick} [${client.id}] do all Clients: ${data.msg}`);
+}
+
+io.on('connection', client => {
+  client.on('loginMsg', data => {
+    const split = data.split(' ');
+    db.login(split[1], split[2])
+      .then(user => {
+        if (!user) {
+          return client.emit('loggedIn', {
+            error: 'Username or Password does not match'
+          })
+        }
+        console.log(`Client ${user.name} [${client.id}] logged in`);
+        io.emit('serverMsg', `${user.name} joined the chat`);
+        
+        return client.emit('loggedIn', {
+          token: tokenGenerator.generate(user)
+        })
+      })
+      .catch(err => {
+        console.log('Error', err);
+      });
+
   });
+
+  client.on('clientMsg', auth(client, messageHandler));
 
   client.on('disconnect', () => {
-    console.log(`Client ${client.name} disconnected`);
+    console.log(`Client [${client.id}] disconnected`);
   });
 });
 

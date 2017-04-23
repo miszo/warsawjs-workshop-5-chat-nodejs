@@ -6,6 +6,7 @@ const readline = require('readline').createInterface({
   input: process.stdin,
   output: process.stdout
 });
+let token = '';
 
 function consoleOut(...msg) {
   process.stdout.clearLine();
@@ -19,13 +20,14 @@ readline.on('line', line => {
     socket.emit('loginMsg', line);
     readline.prompt(true);
   } else {
-    socket.emit('clientMsg', line);
+    socket.emit('clientMsg', {
+      token, 
+      msg: line
+    });
   }
 });
 
 readline.prompt();
-
-socket.on()
 
 socket.on('chatMsg', data => {
   consoleOut(`${data.name}: ${data.message}`);
@@ -33,4 +35,11 @@ socket.on('chatMsg', data => {
 
 socket.on('serverMsg', data => {
   consoleOut(data);
+});
+
+socket.on('loggedIn', data => {
+  if (data.error) {
+    return consoleOut(data.error);
+  }
+  token = data.token
 });

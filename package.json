@@ -22,6 +22,8 @@
   },
   "homepage": "https://github.com/miszo/warsawjs-workshop-5-chat-nodejs#readme",
   "dependencies": {
+    "jwt-simple": "^0.5.1",
+    "lodash": "^4.17.4",
     "socket.io": "^1.7.3",
     "socket.io-client": "^1.7.3"
   }
